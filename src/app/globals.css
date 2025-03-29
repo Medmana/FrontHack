@@ -2,37 +2,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-.gradient-container {
-  min-height: 100vh;
-  width: 100%;
-  background: white;
-  position: relative;
-  overflow: hidden;
-}
-
-.gradient-container::before,
-.gradient-container::after {
-  content: '';
-  position: absolute;
-  width: 500px; /* Augmenter la taille */
-  height: 500px;
-  background: radial-gradient(circle, rgba(2, 15, 248, 0.2), transparent 70%);
-  z-index: 0;
-}
-
-.gradient-container::before {
-  top: -100px; /* Ajuster la position */
-  left: -100px;
-}
-
-.gradient-container::after {
-  bottom: -100px;
-  right: -100px;
-  background: radial-gradient(circle, rgba(2, 15, 248, 0.2), transparent 70%);
-}
-
-/* Pour s'assurer que le contenu reste au-dessus */
-.gradient-container > * {
-  position: relative;
-  z-index: 1;
-}
