@@ -1,8 +1,8 @@
 import SectionTitle from "../Common/SectionTitle";
-import SingleBlog from "./SingleBlog";
-import blogData from "./blogData";
+import SingleExamen from "./SingleExamen";
+import examenData from "./examenData";
 
-const Blog = () => {
+const Examen = () => {
   return (
     <section
       id="blog"
@@ -16,9 +16,9 @@ const Blog = () => {
         />
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 md:gap-x-6 lg:gap-x-8 xl:grid-cols-3">
-          {blogData.map((blog) => (
-            <div key={blog.id} className="w-full">
-              <SingleBlog blog={blog} />
+          {examenData.map((examen) => (
+            <div key={examen.id} className="w-full">
+              <SingleExamen examen={examen} />
             </div>
           ))}
         </div>
@@ -27,4 +27,4 @@ const Blog = () => {
   );
 };
 
-export default Blog;
+export default Examen;

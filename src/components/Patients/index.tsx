@@ -72,7 +72,7 @@ const Patients = () => {
         <div className="flex flex-col items-center  gap-6 justify-center pr-16 lg:pr-0">
   {/* Bouton rond vert avec icône + */}
   <Link
-    href="/add-folder"
+    href="/creer_dossier"
     className="flex items-center justify-center rounded-full bg-green-600 p-3 text-white shadow-md transition-all duration-300 hover:bg-green-700 hover:shadow-lg"
     title="Ajouter un Dossier"
   >

@@ -1,9 +1,9 @@
-import { Blog } from "@/types/blog";
+import { Examen } from "@/types/examen";
 import Image from "next/image";
 import Link from "next/link";
 
-const SingleBlog = ({ blog }: { blog: Blog }) => {
-  const { title, image, paragraph, author, tags, publishDate } = blog;
+const SingleExamen = ({ examen }: { examen: Examen }) => {
+  const { title, image, paragraph, author, tags, publishDate } = examen;
   return (
     <>
       <div className="group relative overflow-hidden rounded-sm bg-white shadow-one duration-300 hover:shadow-two dark:bg-dark dark:hover:shadow-gray-dark">
@@ -55,4 +55,4 @@ const SingleBlog = ({ blog }: { blog: Blog }) => {
   );
 };
 
-export default SingleBlog;
+export default SingleExamen;
