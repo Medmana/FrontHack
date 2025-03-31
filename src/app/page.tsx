@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SigninPage = () => {
   const [showPassword, setShowPassword] = useState(false); // Pour gérer l'affichage du mot de passe
@@ -10,6 +13,56 @@ const SigninPage = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  const [formData, setFormData] = useState({
+    username: "",
+    password: ""
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Échec de la connexion');
+      }
+
+      // Stockage du token
+      localStorage.setItem('access_token', data.access_token);
+      
+      // Redirection après connexion réussie
+      toast.success('Connexion réussie !');
+      router.push('/home');
+      
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error(error.message || 'Identifiant ou mot de passe incorrect');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   return (
     <>
@@ -60,21 +113,29 @@ const SigninPage = () => {
                   />
                 </a>
               </div>
-              <form className="mt-4 space-y-4">
-              <div>
-                <label className="block text-sm font-medium">Identifiant</label>
-                <input
-                  type="text"
-                  placeholder="ex : Dominique"
-                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
-                />
-              </div>
-              <div className="relative">
+              <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium">Identifiant</label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    placeholder="ex : Dominique"
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
+                    required
+                  />
+                </div>
+                <div className="relative">
                   <label className="block text-sm font-medium">Mot de passe</label>
                   <input
                     type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
                     placeholder="ex : @LaboConnect2015"
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
+                    required
                   />
                   <button
                     type="button"
@@ -94,10 +155,15 @@ const SigninPage = () => {
                   />
                   <label htmlFor="show-password" className="text-sm">Afficher le mot de passe</label>
                 </div>
-              <button className="w-full bg-blue-600 text-white py-2 rounded-md">
-                Se connecter
-              </button>
-            </form>
+                <button 
+                  type="submit" 
+                  className="w-full bg-blue-600 text-white py-2 rounded-md disabled:opacity-50"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Connexion en cours...' : 'Se connecter'}
+                </button>
+              </form>
+
               
               
 
