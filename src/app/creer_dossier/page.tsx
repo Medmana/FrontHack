@@ -1,100 +1,213 @@
+'use client';
+import { useState } from 'react';
+import { useRole } from '../../hooks/useRole'
+
 const Creer_dossier = () => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    birthDate: '',
+    gender: '',
+    bloodGroup: '',
+    rhFactor: '',
+    height: '',
+    weight: '',
+    diseases: [{ name: '', stage: '', diagnosisDate: '' }],
+    address: {
+      street: '',
+      city: '',
+      postalCode: '',
+      country: 'Bénin'
+    },
+    phone: '',
+    email: '',
+    fileNumber: `PAT${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleAddressChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        [name]: value
+      }
+    }));
+  };
+
+  const handleDiseaseChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedDiseases = [...formData.diseases];
+    updatedDiseases[index] = {
+      ...updatedDiseases[index],
+      [name]: value
+    };
+    setFormData(prev => ({
+      ...prev,
+      diseases: updatedDiseases
+    }));
+  };
+
+  const addDiseaseField = () => {
+    setFormData(prev => ({
+      ...prev,
+      diseases: [...prev.diseases, { name: '', stage: '', diagnosisDate: '' }]
+    }));
+  };
+
+  const removeDiseaseField = (index) => {
+    const updatedDiseases = formData.diseases.filter((_, i) => i !== index);
+    setFormData(prev => ({
+      ...prev,
+      diseases: updatedDiseases
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Combiner bloodGroup et rhFactor
+      const completeBloodGroup = formData.bloodGroup + formData.rhFactor;
+      
+      const payload = {
+        ...formData,
+        bloodGroup: completeBloodGroup,
+        // Convertir les strings vides en null pour les champs optionnels
+        email: formData.email || null,
+        height: formData.height ? Number(formData.height) : null,
+        weight: formData.weight ? Number(formData.weight) : null,
+        diseases: formData.diseases.filter(d => d.name) // Ne garder que les maladies avec un nom
+      };
+
+      const response = await fetch('http://localhost:3000/api/patients', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de la création du dossier');
+      }
+
+      const result = await response.json();
+      alert('Dossier créé avec succès! Numéro de dossier: ' + result.fileNumber);
+      window.location.href = '/afficher_dossier';
+    } catch (err) {
+      setError(err.message);
+      console.error('Erreur:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+   const isauth = useRole('doctor')
+    
+    if (!isauth) return null
+  
+
   return (
     <section id="contact" className="overflow-hidden py-16 md:py-20 lg:py-28">
       <div className="container">
-      <div className="-mx-4 flex flex-wrap justify-center">
+        <div className="-mx-4 flex flex-wrap justify-center">
           <div className="w-full px-4 lg:w-7/12 xl:w-8/12">
-            <div
-              className="mb-12 rounded-sm bg-white px-8 py-11 shadow-three dark:bg-gray-dark sm:p-[55px] lg:mb-5 lg:px-8 xl:p-[55px]"
-              data-wow-delay=".15s"
-            >
+            <div className="mb-12 rounded-sm bg-white px-8 py-11 shadow-three dark:bg-gray-dark sm:p-[55px] lg:mb-5 lg:px-8 xl:p-[55px]">
               <h2 className="mb-3 text-2xl font-bold text-black dark:text-white sm:text-3xl lg:text-2xl xl:text-3xl">
                 Créer un nouveau dossier médical
               </h2>
               <p className="mb-12 text-base font-medium text-body-color">
                 Veuillez remplir tous les champs obligatoires.
               </p>
-              <form>
+              
+              {error && (
+                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit}>
                 <div className="-mx-4 flex flex-wrap">
-                  {/* Nom */}
+                  {/* Nom et Prénom */}
                   <div className="w-full px-4 md:w-1/2">
                     <div className="mb-8">
-                      <label
-                        htmlFor="lastName"
-                        className="mb-3 block text-sm font-medium text-dark dark:text-white"
-                      >
+                      <label htmlFor="lastName" className="mb-3 block text-sm font-medium text-dark dark:text-white">
                         Nom *
                       </label>
                       <input
                         type="text"
                         id="lastName"
                         name="lastName"
-                        placeholder="Votre nom"
-                        minLength={2}
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        value={formData.lastName}
+                        onChange={handleChange}
                         required
+                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                       />
-                      <p className="mt-1 text-xs text-red-500">Minimum 2 caractères</p>
                     </div>
                   </div>
 
-                  {/* Prénom */}
                   <div className="w-full px-4 md:w-1/2">
                     <div className="mb-8">
-                      <label
-                        htmlFor="firstName"
-                        className="mb-3 block text-sm font-medium text-dark dark:text-white"
-                      >
+                      <label htmlFor="firstName" className="mb-3 block text-sm font-medium text-dark dark:text-white">
                         Prénom *
                       </label>
                       <input
                         type="text"
                         id="firstName"
                         name="firstName"
-                        placeholder="Votre prénom"
-                        minLength={2}
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        value={formData.firstName}
+                        onChange={handleChange}
                         required
+                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                       />
-                      <p className="mt-1 text-xs text-red-500">Minimum 2 caractères</p>
                     </div>
                   </div>
 
-                  {/* Date de naissance */}
+                  {/* Date de naissance et Genre */}
                   <div className="w-full px-4 md:w-1/2">
                     <div className="mb-8">
-                      <label
-                        htmlFor="birthDate"
-                        className="mb-3 block text-sm font-medium text-dark dark:text-white"
-                      >
+                      <label htmlFor="birthDate" className="mb-3 block text-sm font-medium text-dark dark:text-white">
                         Date de naissance *
                       </label>
                       <input
                         type="date"
                         id="birthDate"
                         name="birthDate"
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        value={formData.birthDate}
+                        onChange={handleChange}
                         required
-                        pattern="\d{4}-\d{2}-\d{2}"
+                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                       />
-                      <p className="mt-1 text-xs text-red-500">Format: YYYY-MM-DD</p>
                     </div>
                   </div>
 
-                  {/* Genre */}
                   <div className="w-full px-4 md:w-1/2">
                     <div className="mb-8">
-                      <label
-                        htmlFor="gender"
-                        className="mb-3 block text-sm font-medium text-dark dark:text-white"
-                      >
+                      <label htmlFor="gender" className="mb-3 block text-sm font-medium text-dark dark:text-white">
                         Genre *
                       </label>
                       <select
                         id="gender"
                         name="gender"
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        value={formData.gender}
+                        onChange={handleChange}
                         required
+                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                       >
                         <option value="">Sélectionnez...</option>
                         <option value="male">Homme</option>
@@ -104,20 +217,18 @@ const Creer_dossier = () => {
                     </div>
                   </div>
 
-                  {/* Groupe sanguin */}
+                  {/* Groupe sanguin et Rhésus */}
                   <div className="w-full px-4 md:w-1/2">
                     <div className="mb-8">
-                      <label
-                        htmlFor="bloodGroup"
-                        className="mb-3 block text-sm font-medium text-dark dark:text-white"
-                      >
+                      <label htmlFor="bloodGroup" className="mb-3 block text-sm font-medium text-dark dark:text-white">
                         Groupe sanguin *
                       </label>
                       <select
                         id="bloodGroup"
                         name="bloodGroup"
+                        value={formData.bloodGroup}
+                        onChange={handleChange}
                         className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                        required
                       >
                         <option value="">Sélectionnez...</option>
                         <option value="A">A</option>
@@ -128,68 +239,223 @@ const Creer_dossier = () => {
                     </div>
                   </div>
 
-                  {/* Rhésus */}
                   <div className="w-full px-4 md:w-1/2">
                     <div className="mb-8">
-                      <label
-                        htmlFor="rhFactor"
-                        className="mb-3 block text-sm font-medium text-dark dark:text-white"
-                      >
+                      <label htmlFor="rhFactor" className="mb-3 block text-sm font-medium text-dark dark:text-white">
                         Facteur Rh *
                       </label>
                       <select
                         id="rhFactor"
                         name="rhFactor"
+                        value={formData.rhFactor}
+                        onChange={handleChange}
                         className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                        required
                       >
                         <option value="">Sélectionnez...</option>
-                        <option value="+">Rh+</option>
-                        <option value="-">Rh-</option>
+                        <option value="+">+</option>
+                        <option value="-">-</option>
                       </select>
                     </div>
+                  </div>
+
+                  {/* Taille et Poids */}
+                  <div className="w-full px-4 md:w-1/2">
+                    <div className="mb-8">
+                      <label htmlFor="height" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                        Taille (cm)
+                      </label>
+                      <input
+                        type="number"
+                        id="height"
+                        name="height"
+                        value={formData.height}
+                        onChange={handleChange}
+
+                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="w-full px-4 md:w-1/2">
+                    <div className="mb-8">
+                      <label htmlFor="weight" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                        Poids (kg)
+                      </label>
+                      <input
+                        type="number"
+                        id="weight"
+                        name="weight"
+                        value={formData.weight}
+                        onChange={handleChange}
+                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Maladies */}
+                  {formData.diseases.map((disease, index) => (
+                    <div key={index} className="w-full px-4 border-b pb-4 mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="text-lg font-medium">Maladie {index + 1}</h3>
+                        {index > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => removeDiseaseField(index)}
+                            className="text-red-500 text-sm"
+                          >
+                            Supprimer
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="mb-4">
+                        <label htmlFor={`disease-name-${index}`} className="mb-1 block text-sm font-medium text-dark dark:text-white">
+                          Nom de la maladie
+                        </label>
+                        <input
+                          type="text"
+                          id={`disease-name-${index}`}
+                          name="name"
+                          value={disease.name}
+                          onChange={(e) => handleDiseaseChange(index, e)}
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor={`disease-stage-${index}`} className="mb-1 block text-sm font-medium text-dark dark:text-white">
+                            Stade
+                          </label>
+                          <select
+                            id={`disease-stage-${index}`}
+                            name="stage"
+                            value={disease.stage}
+                            onChange={(e) => handleDiseaseChange(index, e)}
+                            className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                          >
+                            <option value="">Sélectionnez...</option>
+                            <option value="débutant">Débutant</option>
+                            <option value="intermédiaire">Intermédiaire</option>
+                            <option value="avancé">Avancé</option>
+                            <option value="chronique">Chronique</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label htmlFor={`disease-date-${index}`} className="mb-1 block text-sm font-medium text-dark dark:text-white">
+                            Date de diagnostic
+                          </label>
+                          <input
+                            type="date"
+                            id={`disease-date-${index}`}
+                            name="diagnosisDate"
+                            value={disease.diagnosisDate}
+                            onChange={(e) => handleDiseaseChange(index, e)}
+                            className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="w-full px-4 mb-4">
+                    <button
+                      type="button"
+                      onClick={addDiseaseField}
+                      className="text-primary text-sm font-medium"
+                    >
+                      + Ajouter une autre maladie
+                    </button>
                   </div>
 
                   {/* Adresse */}
                   <div className="w-full px-4">
                     <div className="mb-8">
-                      <label
-                        htmlFor="address"
-                        className="mb-3 block text-sm font-medium text-dark dark:text-white"
-                      >
+                      <label htmlFor="street" className="mb-3 block text-sm font-medium text-dark dark:text-white">
                         Adresse *
                       </label>
                       <input
                         type="text"
-                        id="address"
-                        name="address"
-                        placeholder="Votre adresse complète"
-                        minLength={5}
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        id="street"
+                        name="street"
+                        value={formData.address.street}
+                        onChange={handleAddressChange}
                         required
+                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                       />
                     </div>
                   </div>
 
-                  {/* Téléphone */}
-                  <div className="w-full px-4">
+                  <div className="w-full px-4 md:w-1/3">
                     <div className="mb-8">
-                      <label
-                        htmlFor="phone"
-                        className="mb-3 block text-sm font-medium text-dark dark:text-white"
-                      >
+                      <label htmlFor="city" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                        Ville *
+                      </label>
+                      <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        value={formData.address.city}
+                        onChange={handleAddressChange}
+                        required
+                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                      />
+                    </div>
+                  </div>
+
+              
+
+                  <div className="w-full px-4 md:w-1/3">
+                    <div className="mb-8">
+                      <label htmlFor="country" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                        Pays *
+                      </label>
+                      <input
+                        type="text"
+                        id="country"
+                        name="country"
+                        value={formData.address.country}
+                        onChange={handleAddressChange}
+                        required
+                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Contact */}
+                  <div className="w-full px-4 md:w-1/2">
+                    <div className="mb-8">
+                      <label htmlFor="phone" className="mb-3 block text-sm font-medium text-dark dark:text-white">
                         Téléphone *
                       </label>
                       <input
                         type="tel"
                         id="phone"
                         name="phone"
-                        placeholder="Numéro à 10 chiffres"
-                        pattern="\d{10}"
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder="+229XXXXXXXX"
                         required
+                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                       />
-                      <p className="mt-1 text-xs text-red-500">10 chiffres requis</p>
+                      
+                    </div>
+                  </div>
+
+                  <div className="w-full px-4 md:w-1/2">
+                    <div className="mb-8">
+                      <label htmlFor="email" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                      />
                     </div>
                   </div>
 
@@ -197,18 +463,25 @@ const Creer_dossier = () => {
                   <div className="w-full px-4">
                     <button
                       type="submit"
-                      className="rounded-sm bg-primary px-9 py-4 text-base font-medium text-white shadow-submit duration-300 hover:bg-primary/90 dark:shadow-submit-dark"
+                      disabled={isLoading}
+                      className="rounded-sm bg-primary px-9 py-4 text-base font-medium text-white shadow-submit duration-300 hover:bg-primary/90 dark:shadow-submit-dark flex items-center justify-center"
                     >
-                      Créer le dossier
+                      {isLoading ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          En cours...
+                        </>
+                      ) : 'Créer le dossier'}
                     </button>
                   </div>
                 </div>
               </form>
-              
             </div>
-            
           </div>
-          <div className="w-full px-4 lg:w-5/12 xl:w-4/12">
+              <div className="w-full px-4 lg:w-5/12 xl:w-4/12">
             {/* Vous pouvez ajouter du contenu supplémentaire ici si nécessaire */}
           </div>
         </div>

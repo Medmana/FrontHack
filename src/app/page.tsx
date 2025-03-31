@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const SigninPage = () => {
@@ -34,30 +34,45 @@ const SigninPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData)
       });
-
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Échec de la connexion');
+        const errorMessage = data.message || 'Identifiant ou mot de passe incorrect';
+        toast.error(errorMessage);
+        return;
       }
-
-      // Stockage du token
+      
+      // Stockage du token et des infos utilisateur
       localStorage.setItem('access_token', data.access_token);
       
-      // Redirection après connexion réussie
+      if (data.user) {
+        // Stocker les infos utilisateur si elles sont disponibles
+        localStorage.setItem('user_role', data.user.role);
+        localStorage.setItem('user_data', JSON.stringify(data.user));
+      }
+
       toast.success('Connexion réussie !');
-      router.push('/home');
+      
+      // Redirection en fonction du rôle
+      if (data.user?.role === 'admin') {
+        router.push('/admin/dashboard');
+      } else if (data.user?.role === 'doctor') {
+        router.push('/home');
+      } else {
+        router.push('/'); // Redirection par défaut pour les autres rôles
+      }
       
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error.message || 'Identifiant ou mot de passe incorrect');
+      const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -66,6 +81,18 @@ const SigninPage = () => {
 
   return (
     <>
+    <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       <Head>
         <title>Connexion - LaboConnect</title>
       </Head>

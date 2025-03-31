@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { Patient } from "@/types/patient";
 import SectionTitle from "../Common/SectionTitle";
 import SinglePatient from "./SinglePatient";
+import { useRole } from '../../hooks/useRole'
 
 const patientData: Patient[] = [
   {
@@ -60,6 +61,9 @@ const Patients = () => {
       return false;
     });
   }, [searchTerm, searchField]);
+  const isauth = useRole('doctor')
+  
+  if (!isauth) return null
 
   return (
     <section className="dark:bg-bg-color-dark bg-gray-light relative z-10 py-16 md:py-20 lg:py-28">
