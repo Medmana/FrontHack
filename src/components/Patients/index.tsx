@@ -4,66 +4,96 @@ import { useState, useMemo } from "react";
 import { Patient } from "@/types/patient";
 import SectionTitle from "../Common/SectionTitle";
 import SinglePatient from "./SinglePatient";
-import { useRole } from '../../hooks/useRole'
-
-const patientData: Patient[] = [
-  {
-    id: 1,
-    name: "Musharof Chy",
-    age: 45,
-    diseaseStage: "Stade 2",
-    lastVisit: "15/06/2023",
-    doctor: "Dr. Ahi Uriel",
-    treatment: "Thérapie combinée"
-  },
-  {
-    id: 2,
-    name: "Devid Weilium",
-    age: 62,
-    diseaseStage: "Stade 1",
-    lastVisit: "22/05/2023",
-    doctor: "Dr. Hope Si",
-    treatment: "Médication orale"
-  },
-  // Ajoutez plus de patients ici...
-];
-
+import { useRole } from '../../hooks/useRole';
+import { useEffect } from "react";
+const token = localStorage.getItem('access_token');
 const Patients = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchField, setSearchField] = useState<keyof Patient>("name"); // Par défaut recherche par nom
+  const [searchField, setSearchField] = useState<keyof Patient>("firstName");
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+
+  // Récupération des patients depuis l'API
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/patients', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) throw new Error('Erreur réseau');
+        const data = await response.json();
+        if (!Array.isArray(data)) throw new Error('Format de données invalide');
+        
+        setPatients(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erreur inconnue');
+        setPatients([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, []);
 
   const getFieldLabel = (field: keyof Patient): string => {
     const labels: Record<keyof Patient, string> = {
-      name: "nom",
+      _id: "ID",
+      firstName: "prénom",
+      lastName: "nom",
+      birthDate: "date de naissance",
+      gender: "genre",
+      bloodGroup: "groupe sanguin",
+      height: "taille",
+      weight: "poids",
+      diseases: "maladies",
+      address: "adresse",
+      phone: "téléphone",
+      email: "email",
+      fileNumber: "numéro de dossier",
+      attendingDoctor: "médecin traitant",
+      attendingDoctorName: "médecin traitant",
       age: "âge",
-      id: "numéro de dossier",
-      diseaseStage: "stade",
-      lastVisit: "dernière visite",
-      doctor: "médecin",
-      treatment: "traitement"
+      isActive: "statut",
+      createdAt: "date de création",
+      updatedAt: "date de modification"
     };
     return labels[field] || field.toString();
   };
 
   const filteredPatients = useMemo(() => {
-    if (!searchTerm.trim()) return patientData;
+    if (!searchTerm.trim()) return patients;
 
     const lowerCaseSearch = searchTerm.toLowerCase();
 
-    return patientData.filter(patient => {
+    return patients.filter(patient => {
       const fieldValue = patient[searchField];
       
       if (typeof fieldValue === 'string') {
         return fieldValue.toLowerCase().includes(lowerCaseSearch);
       } else if (typeof fieldValue === 'number') {
         return fieldValue.toString().includes(searchTerm);
-      }
+      } else if (Array.isArray(fieldValue)) {
+        // Recherche dans les maladies
+        return fieldValue.some(disease => 
+          disease.name.toLowerCase().includes(lowerCaseSearch)
+    )}
       return false;
     });
-  }, [searchTerm, searchField]);
-  const isauth = useRole('doctor')
+  }, [searchTerm, searchField, patients]);
+
+  const isauth = useRole('doctor');
   
-  if (!isauth) return null
+  if (!isauth) return null;
+  if (loading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur: {error}</div>;
+  if (!Array.isArray(patients)) return <div>Format de données invalide</div>;
 
   return (
     <section className="dark:bg-bg-color-dark bg-gray-light relative z-10 py-16 md:py-20 lg:py-28">
@@ -73,72 +103,50 @@ const Patients = () => {
           paragraph=""
           center
         />
-        <div className="flex flex-col items-center  gap-6 justify-center pr-16 lg:pr-0">
-  {/* Bouton rond vert avec icône + */}
-  <Link
-    href="/creer_dossier"
-    className="flex items-center justify-center rounded-full bg-green-600 p-3 text-white shadow-md transition-all duration-300 hover:bg-green-700 hover:shadow-lg"
-    title="Ajouter un Dossier"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-    </svg>
-  </Link>
-  
-  {/* Texte sous le bouton */}
-  <span className="mt-1 text-xs font-medium text-gray-600 dark:text-gray-300">
-    Ajouter un Dossier
-  </span>
-</div>
+        
+        <div className="flex flex-col items-center gap-6 justify-center pr-16 lg:pr-0">
+          <Link
+            href="/creer_dossier"
+            className="flex items-center justify-center rounded-full bg-green-600 p-3 text-white shadow-md transition-all duration-300 hover:bg-green-700 hover:shadow-lg"
+            title="Ajouter un Dossier"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </Link>
+          <span className="mt-1 text-xs font-medium text-gray-600 dark:text-gray-300">
+            Ajouter un Dossier
+          </span>
+        </div>
 
-
-        {/* Barre de recherche améliorée */}
+        {/* Barre de recherche */}
         <div className="mb-10 w-full max-w-3xl mx-auto flex-1">
           <div className="flex flex-col md:flex-row gap-4">
-            {/* Sélecteur de champ */}
             <select
               className="rounded-sm bg-white p-8 shadow-two duration-300 hover:shadow-one dark:bg-dark dark:shadow-three dark:hover:shadow-gray-dark lg:px-5 xl:px-8"
               value={searchField}
               onChange={(e) => setSearchField(e.target.value as keyof Patient)}
             >
-              <option value="name">Nom</option>
-              <option value="age">Âge</option>
-              <option value="id">N° Dossier</option>
-              <option value="diseaseStage">Stade</option>
-              <option value="lastVisit">Dernière visite</option>
-              <option value="doctor">Médecin</option>
-              <option value="treatment">Traitement</option>
+              <option value="firstName">Prénom</option>
+              <option value="lastName">Nom</option>
+              <option value="fileNumber">N° Dossier</option>
+              <option value="bloodGroup">Groupe sanguin</option>
+              <option value="diseases">Maladies</option>
+              <option value="attendingDoctorName">Médecin</option>
             </select>
             
-            {/* Champ de recherche */}
             <div className="relative flex-1">
               <input
-                type={searchField === 'age' || searchField === 'id' ? "number" : "text"}
+                type="text"
                 placeholder={`Rechercher par ${getFieldLabel(searchField)}...`}
                 className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:text-white"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <span className="absolute right-4 top-4">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M9.16667 3.33333C5.945 3.33333 3.33333 5.945 3.33333 9.16667C3.33333 12.3883 5.945 15 9.16667 15C12.3883 15 15 12.3883 15 9.16667C15 5.945 12.3883 3.33333 9.16667 3.33333ZM1.66667 9.16667C1.66667 5.02453 5.02453 1.66667 9.16667 1.66667C13.3088 1.66667 16.6667 5.02453 16.6667 9.16667C16.6667 13.3088 13.3088 16.6667 9.16667 16.6667C5.02453 16.6667 1.66667 13.3088 1.66667 9.16667Z"
-                    fill="#4A6CF7"
-                  />
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z"
-                    fill="#4A6CF7"
-                  />
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M9.16667 3.33333C5.945 3.33333 3.33333 5.945 3.33333 9.16667C3.33333 12.3883 5.945 15 9.16667 15C12.3883 15 15 12.3883 15 9.16667C15 5.945 12.3883 3.33333 9.16667 3.33333ZM1.66667 9.16667C1.66667 5.02453 5.02453 1.66667 9.16667 1.66667C13.3088 1.66667 16.6667 5.02453 16.6667 9.16667C16.6667 13.3088 13.3088 16.6667 9.16667 16.6667C5.02453 16.6667 1.66667 13.3088 1.66667 9.16667Z" fill="#4A6CF7" />
+                  <path fillRule="evenodd" clipRule="evenodd" d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z" fill="#4A6CF7" />
                 </svg>
               </span>
             </div>
@@ -149,7 +157,7 @@ const Patients = () => {
         {filteredPatients.length > 0 ? (
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
             {filteredPatients.map((patient) => (
-              <SinglePatient key={patient.id} patient={patient} />
+              <SinglePatient key={patient._id} patient={patient} />
             ))}
           </div>
         ) : (
