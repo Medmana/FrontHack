@@ -21,7 +21,7 @@ const Sidebar = ({ patientId }: { patientId: string }) => {
     {
       icon: <History className="w-5 h-5 text-purple-600" />,
       label: "Antécédents médicaux",
-      href: `/patients/${patientId}/antecedents`,
+      href: `/afficher_dossier/${patientId}/antecedent`,
     },
     {
       icon: <Pill className="w-5 h-5 text-blue-500" />,
