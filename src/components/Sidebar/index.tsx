@@ -36,7 +36,7 @@ const Sidebar = ({ patientId }: { patientId: string }) => {
     {
       icon: <FileSearch className="w-5 h-5 text-orange-500" />,
       label: "Examens et résultats", 
-      href: `/patients/${patientId}/examens`,
+      href: `/afficher_dossier/${patientId}/exam`,
     },
     {
       icon: <FilePlus className="w-5 h-5 text-red-500" />,
