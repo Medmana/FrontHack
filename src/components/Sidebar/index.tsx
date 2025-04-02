@@ -26,12 +26,12 @@ const Sidebar = ({ patientId }: { patientId: string }) => {
     {
       icon: <Pill className="w-5 h-5 text-blue-500" />,
       label: "Traitement en cours",
-      href: `/patients/${patientId}/traitements`,
+      href: `/afficher_dossier/${patientId}/traitement`,
     },
     {
       icon: <ClipboardList className="w-5 h-5 text-green-600" />,
       label: "Prescriptions", 
-      href: `/patients/${patientId}/prescriptions`,
+      href: `/afficher_dossier/${patientId}/prescription`,
     },
     {
       icon: <FileSearch className="w-5 h-5 text-orange-500" />,
