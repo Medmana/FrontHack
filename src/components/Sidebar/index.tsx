@@ -9,7 +9,8 @@ import {
   FileSearch,
   FilePlus,
   UserCircle,
-  Trash2
+  Trash2,
+  CalendarCheck,
 } from 'lucide-react';
 
 const Sidebar = ({ patientId }: { patientId: string }) => {
@@ -39,15 +40,17 @@ const Sidebar = ({ patientId }: { patientId: string }) => {
       href: `/afficher_dossier/${patientId}/exam`,
     },
     {
-      icon: <FilePlus className="w-5 h-5 text-red-500" />,
-      label: "Demande d'examen", 
-      href: `/patients/${patientId}/demandes-examen`,
+      icon: <CalendarCheck className="w-5 h-5 text-indigo-600" />,
+      label: "Consultations",
+      href: `/afficher_dossier/${patientId}/consultation`,
     },
+    
     {
       icon: <UserCircle className="w-5 h-5 text-indigo-600" />,
-      label: "Informations personnelles",
-      href: `/patients/${patientId}/informations`,
+      label: "Patient",
+      href: `/afficher_dossier/${patientId}`,
     }
+
   ];
 
   return (
@@ -65,12 +68,7 @@ const Sidebar = ({ patientId }: { patientId: string }) => {
           ))}
         </ul>
 
-        <div className="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <button className="w-full flex items-center justify-center space-x-2 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded transition-colors duration-200">
-            <Trash2 className="w-5 h-5" />
-            <span>Supprimer le dossier</span>
-          </button>
-        </div>
+       
       </nav>
     </div>
   );
