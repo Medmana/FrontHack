@@ -2,6 +2,7 @@
 import { PlusCircle, AlertCircle, CheckCircle, Edit, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useRole } from '../../../../hooks/useRole';
 
 export default function AntecedentsList() {
   const params = useParams();
@@ -148,7 +149,9 @@ export default function AntecedentsList() {
       setError(err.message);
     }
   };
-
+  const isauth = useRole('doctor');
+  
+  if (!isauth) return null;
   if (loading) return <div className="text-center py-8">Chargement...</div>;
   if (error) return <div className="text-red-500 text-center py-8">Erreur: {error}</div>;
 

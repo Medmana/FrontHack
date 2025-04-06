@@ -109,7 +109,8 @@ const Creer_dossier = () => {
 
       const result = await response.json();
       alert('Dossier créé avec succès! Numéro de dossier: ' + result.fileNumber);
-      window.location.href = '/afficher_dossier';
+
+      window.location.href = '/afficher_dossier/' + result._id; // Rediriger vers la page d'affichage du dossier
     } catch (err) {
       setError(err.message);
       console.error('Erreur:', err);

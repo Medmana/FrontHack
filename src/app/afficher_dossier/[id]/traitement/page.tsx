@@ -2,6 +2,7 @@
 import { PlusCircle, AlertCircle, CheckCircle, Edit, Trash2, Printer } from "lucide-react";
 import { useEffect, useState, ChangeEvent } from "react";
 import { useParams } from "next/navigation";
+import { useRole } from '../../../../hooks/useRole';
 
 interface Medication {
   name: string;
@@ -183,7 +184,9 @@ export default function PrescriptionsList() {
     // Implémentez la logique d'impression ici
     console.log('Impression de la prescription:', prescription);
   };
-
+  const isauth = useRole('doctor');
+  
+  if (!isauth) return null;
   if (loading) return <div className="text-center py-8">Chargement...</div>;
   if (error) return <div className="text-red-500 text-center py-8">Erreur: {error}</div>;
 

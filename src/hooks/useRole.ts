@@ -1,39 +1,55 @@
 // hooks/useRole.ts
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
 export function useRole(requiredRole: string) {
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasRole, setHasRole] = useState(false)
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasRole, setHasRole] = useState(false);
 
   useEffect(() => {
     // Vérifier si nous sommes côté client
     if (typeof window === 'undefined') {
-      setIsLoading(false)
-      return
+      setIsLoading(false);
+      return;
     }
 
-    const userRole = localStorage.getItem('user_role')
-    const userData = localStorage.getItem('user_data')
+    const checkAuth = () => {
+      const accessToken = localStorage.getItem('access_token');
+      const userRole = localStorage.getItem('user_role');
+      const userData = localStorage.getItem('user_data');
 
-    if (!userRole || !userData) {
+      // Si le token d'accès est manquant, rediriger vers la page de connexion
+      if (!accessToken) {
+        window.location.href = '/';
+        return false;
+      }
+
+      // Si les données utilisateur ou le rôle sont manquants
+      if (!userRole || !userData) {
+        window.location.href = '/';
+        return false;
+      }
+
+      // Vérifier le rôle
+      const roleMatches = userRole === requiredRole;
       
-      window.location.href = '/login'
-      return
+      // Rediriger si le rôle ne correspond pas
+      if (!roleMatches) {
+        window.location.href = '/unauthorized';
+        return false;
+      }
+
+      return true;
+    };
+
+    const authValid = checkAuth();
+    if (authValid) {
+      setHasRole(true);
+      setIsLoading(false);
     }
-
-    setHasRole(userRole === requiredRole)
-    setIsLoading(false)
-
-    if (userRole !== requiredRole) {
-      // Attendre que le router soit prêt avant de rediriger
-      
-        window.location.href = '/unauthorized'
-      
-    }
-  }, [requiredRole])
+  }, [requiredRole]);
 
   return {
     hasRole,
     isLoading,
-  }
+  };
 }

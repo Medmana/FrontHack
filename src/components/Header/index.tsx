@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
+import LogoutButton from '@/components/LogoutButton';
 
 const Header = () => {
   // Navbar toggle
@@ -156,12 +157,7 @@ const Header = () => {
               <div>
                   <ThemeToggler />
                 </div>
-              <Link
-  href="/logout" // ou l'URL de déconnexion appropriée
-  className="ease-in-up shadow-btn hover:shadow-btn-hover rounded-sm bg-red-600 px-4 py-2 text-sm font-medium text-white transition duration-300 hover:bg-red-700 hover:bg-opacity-90"
->
-  Déconnexion
-</Link>
+                <LogoutButton />
                 
               </div>
             </div>

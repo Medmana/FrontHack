@@ -2,6 +2,7 @@
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Save, Edit, X, Trash2 } from 'lucide-react';
+import { useRole } from '../../../hooks/useRole';
 
 interface PatientData {
   id: string;
@@ -125,6 +126,9 @@ export default function PatientProfile() {
       }
     }
   };
+  const isauth = useRole('doctor');
+  
+  if (!isauth) return null;
 
   if (loading) {
     return (

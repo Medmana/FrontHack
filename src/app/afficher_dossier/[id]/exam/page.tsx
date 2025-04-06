@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { FileSearch, Plus, Edit, Trash2, ChevronLeft, Save } from 'lucide-react';
-const accessToken = localStorage.getItem('access_token')
+const accessToken = localStorage.getItem('access_token');
+import { useRole } from '../../../../hooks/useRole';
 interface Exam {
   _id: string;
   examDate: string | Date;
@@ -135,7 +136,9 @@ export default function PatientExams() {
       [name]: name.endsWith('Date') ? value : Number(value) || value
     }));
   };
-
+  const isauth = useRole('doctor');
+  
+  if (!isauth) return null;
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">

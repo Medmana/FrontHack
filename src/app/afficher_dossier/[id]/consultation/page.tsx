@@ -3,6 +3,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Plus, Stethoscope, ChevronLeft, Calendar, ClipboardList, FileText } from 'lucide-react';
 import Link from 'next/link';
+import { useRole } from '../../../../hooks/useRole';
 
 interface Consultation {
   _id: string;
@@ -156,7 +157,9 @@ export default function ConsultationPage() {
       </div>
     );
   }
-
+  const isauth = useRole('doctor');
+  
+  if (!isauth) return null;
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center mb-6">
