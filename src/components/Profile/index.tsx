@@ -15,10 +15,13 @@ interface PatientData {
     city?: string;
     country?: string;
   };
+  diseases: {  
+    name?: string;
+    stage?: string;
+  };
   height: number;
   weight: number;
   bloodGroup: string;
-  diseases: string[];
   fileNumber: string;
 }
 const token = localStorage.getItem('access_token');
@@ -80,12 +83,12 @@ const ProfileCard = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 py-16 md:py-20 lg:py-28">
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-2xl shadow-xl overflow-hidden">
-        <div className="flex flex-col md:flex-row">
+    <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 lg:py-22 relative z-10">
+      <div className="bg-white text-blue-800 dark:bg-gray-900 dark:text-white rounded-2xl shadow-xl overflow-hidden border border-blue-200 dark:border-gray-700">
+      <div className="flex flex-col md:flex-row">
           {/* Partie gauche - Photo et identité */}
-          <div className="p-6 md:p-8 flex flex-col items-center md:w-1/4 bg-blue-700">
-            <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center border-4 border-blue-300 mb-4">
+          <div className="p-2 md:p-2 flex flex-col items-center md:w-1/4 bg-white dark:bg-gray-800 border-r border-blue-200 dark:border-gray-700">
+          <div className="w-28 h-28 bg-blue-800 dark:bg-white rounded-full flex items-center justify-center border-4 border-white dark:border-gray-800 mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -115,43 +118,52 @@ const ProfileCard = () => {
           </div>
 
           {/* Partie centrale - Informations médicales */}
-          <div className="p-6 md:p-8 md:w-2/4 border-t md:border-t-0 md:border-l border-blue-500 border-opacity-30">
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-1">Dossier médical</h3>
-              <p className="text-blue-100 font-mono">#{patient.fileNumber}</p>
-            </div>
-            
-            <h3 className="text-lg font-semibold mb-4">Informations Médicales</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-blue-200 text-sm">Groupe Sanguin</p>
-                <p className="font-medium">{patient.bloodGroup || 'Non renseigné'}</p>
-              </div>
-              <div>
-                <p className="text-blue-200 text-sm">Taille</p>
-                <p className="font-medium">{patient.height ? `${patient.height} cm` : 'Non renseigné'}</p>
-              </div>
-              <div>
-                <p className="text-blue-200 text-sm">Poids</p>
-                <p className="font-medium">{patient.weight ? `${patient.weight} kg` : 'Non renseigné'}</p>
-              </div>
-            </div>
-          </div>
+          <div className="p-3 md:p-3 md:w-2/4 border-t md:border-t-0 md:border-l border-blue-200 dark:border-gray-700">
+ 
+ <h3 className="text-lg font-semibold mb-4">Informations Médicales</h3>
+ <div className="grid grid-cols-2 gap-2">
+   <div className="mb-6">
+
+     <p className="text-blue-700 dark:text-gray-300 font-mono">N° dossier</p>
+     <p className="font-medium">#{patient.fileNumber}</p>
+   </div>
+   <div>
+     <p className="text-blue-600 dark:text-gray-400 text-sm">Groupe Sanguin</p>
+     <p className="font-medium">{patient.bloodGroup || 'Non renseigné'}</p>
+   </div>
+   <div>
+     <p className="text-blue-600 dark:text-gray-400 text-sm">Taille</p>
+     <p className="font-medium">{patient.height ? `${patient.height} cm` : 'Non renseigné'}</p>
+   </div>
+   <div>
+     <p className="text-blue-600 dark:text-gray-400 text-sm">Poids</p>
+     <p className="font-medium">{patient.weight ? `${patient.weight} kg` : 'Non renseigné'}</p>
+   </div>
+   <div>
+     <p className="text-blue-600 dark:text-gray-400 text-sm">Maladie</p>
+     <p className="font-medium">{patient.diseases.name ? `${patient.diseases.name} ` : 'Non renseigné'}</p>
+   </div>
+   <div>
+     <p className="text-blue-600 dark:text-gray-400 text-sm">stade</p>
+     <p className="font-medium">{patient.diseases.stage ? `${patient.diseases.stage} ` : 'Non renseigné'}</p>
+   </div>
+ </div>
+</div>
 
           {/* Partie droite - Contact */}
           <div className="p-6 md:p-8 md:w-1/4 border-t md:border-t-0 md:border-l border-blue-500 border-opacity-30">
             <h3 className="text-lg font-semibold mb-4">Coordonnées</h3>
             <div className="space-y-4">
               <div>
-                <p className="text-blue-200 text-sm">Téléphone</p>
+                <p className="text-blue-600 dark:text-gray-400 text-sm">Téléphone</p>
                 <p className="font-medium">{patient.phone || 'Non renseigné'}</p>
               </div>
               <div>
-                <p className="text-blue-200 text-sm">Email</p>
+                <p className="text-blue-600 dark:text-gray-400 text-sm">Email</p>
                 <p className="font-medium break-all">{patient.email || 'Non renseigné'}</p>
               </div>
               <div>
-                <p className="text-blue-200 text-sm">Adresse</p>
+                <p className="text-blue-600 dark:text-gray-400 text-sm">Adresse</p>
                 <p className="font-medium">
     {patient.address?.street && `${patient.address.street}, `}
     {patient.address?.city}

@@ -103,6 +103,9 @@ const Patients = () => {
           paragraph=""
           center
         />
+        <span className="inline-flex items-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-white">
+        {filteredPatients.length} patient{filteredPatients.length !== 1 ? 's' : ''}
+      </span>
         
         <div className="flex flex-col items-center gap-6 justify-center pr-16 lg:pr-0">
           <Link
@@ -121,9 +124,9 @@ const Patients = () => {
 
         {/* Barre de recherche */}
         <div className="mb-10 w-full max-w-3xl mx-auto flex-1">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex justify-between items-center mb-6">
             <select
-              className="rounded-sm bg-white p-8 shadow-two duration-300 hover:shadow-one dark:bg-dark dark:shadow-three dark:hover:shadow-gray-dark lg:px-5 xl:px-8"
+               className="w-10/3 p-2 border rounded-md dark:bg-gray-800 dark:text-white"
               value={searchField}
               onChange={(e) => setSearchField(e.target.value as keyof Patient)}
             >
@@ -131,7 +134,8 @@ const Patients = () => {
               <option value="lastName">Nom</option>
               <option value="fileNumber">N° Dossier</option>
               <option value="bloodGroup">Groupe sanguin</option>
-              <option value="diseases">Maladies</option>
+              <option value="diseases.name">Maladies</option>
+              <option value="diseases.stage">Stade de maladie</option>
               <option value="attendingDoctorName">Médecin</option>
             </select>
             
@@ -139,16 +143,11 @@ const Patients = () => {
               <input
                 type="text"
                 placeholder={`Rechercher par ${getFieldLabel(searchField)}...`}
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:text-white"
+                className="w-2/3 p-2 border rounded-md dark:bg-gray-800 dark:text-white"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <span className="absolute right-4 top-4">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" clipRule="evenodd" d="M9.16667 3.33333C5.945 3.33333 3.33333 5.945 3.33333 9.16667C3.33333 12.3883 5.945 15 9.16667 15C12.3883 15 15 12.3883 15 9.16667C15 5.945 12.3883 3.33333 9.16667 3.33333ZM1.66667 9.16667C1.66667 5.02453 5.02453 1.66667 9.16667 1.66667C13.3088 1.66667 16.6667 5.02453 16.6667 9.16667C16.6667 13.3088 13.3088 16.6667 9.16667 16.6667C5.02453 16.6667 1.66667 13.3088 1.66667 9.16667Z" fill="#4A6CF7" />
-                  <path fillRule="evenodd" clipRule="evenodd" d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z" fill="#4A6CF7" />
-                </svg>
-              </span>
+             
             </div>
           </div>
         </div>

@@ -17,10 +17,14 @@ interface PatientData {
     city?: string;
     country?: string;
   };
+  diseases: {
+    name: string;
+    stage: string;
+    diagnosisDate: string | Date;
+  };
   height: number;
   weight: number;
   bloodGroup: string;
-  diseases: string[];
   fileNumber: string;
 }
 
@@ -48,7 +52,14 @@ export default function PatientProfile() {
         
         const data = await response.json();
         setPatient(data);
-        setEditData(data);
+        setEditData({
+          ...data,
+          diseases: {
+            name: data.diseases?.name || '',
+            stage: data.diseases?.stage || '',
+            diagnosisDate: data.diseases?.diagnosisDate || ''
+          }
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erreur inconnue');
       } finally {
@@ -71,6 +82,15 @@ export default function PatientProfile() {
           [field]: value
         }
       }));
+    } else if (name.startsWith('diseases.')) {
+      const field = name.split('.')[1];
+      setEditData(prev => ({
+        ...prev,
+        diseases: {
+          ...prev.diseases,
+          [field]: field === 'diagnosisDate' ? new Date(value).toISOString() : value
+        }
+      }));
     } else {
       setEditData(prev => ({
         ...prev,
@@ -81,6 +101,11 @@ export default function PatientProfile() {
 
   const handleSave = async () => {
     try {
+      if (!editData.diseases?.name) {
+        setError('Le nom de la maladie est obligatoire');
+        return;
+      }
+
       setLoading(true);
       const token = localStorage.getItem('access_token');
       const response = await fetch(`http://localhost:3000/api/patients/${patientId}`, {
@@ -97,12 +122,14 @@ export default function PatientProfile() {
       const updatedPatient = await response.json();
       setPatient(updatedPatient);
       setIsEditing(false);
+      setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
     } finally {
       setLoading(false);
     }
   };
+
   const handleDelete = async () => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce patient ? Cette action est irréversible.')) {
       try {
@@ -117,8 +144,7 @@ export default function PatientProfile() {
   
         if (!response.ok) throw new Error('Échec de la suppression');
   
-        // Rediriger après suppression
-        window.location.href = '/home'; // Ou utilisez le router de Next.js si configuré
+        window.location.href = '/home';
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
       } finally {
@@ -126,6 +152,7 @@ export default function PatientProfile() {
       }
     }
   };
+
   const isauth = useRole('doctor');
   
   if (!isauth) return null;
@@ -155,47 +182,47 @@ export default function PatientProfile() {
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         {/* En-tête avec boutons d'édition */}
         <div className="bg-blue-600 px-6 py-4 flex justify-between items-center">
-  <h1 className="text-2xl font-bold text-white">
-    {patient.firstName} {patient.lastName}
-  </h1>
-  <div className="flex space-x-2">
-    {isEditing ? (
-      <>
-        <button
-          onClick={() => setIsEditing(false)}
-          className="p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50"
-          title="Annuler"
-        >
-          <X size={20} />
-        </button>
-        <button
-          onClick={handleSave}
-          className="p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50"
-          title="Enregistrer"
-        >
-          <Save size={20} />
-        </button>
-      </>
-    ) : (
-      <>
-        <button
-          onClick={() => setIsEditing(true)}
-          className="p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50"
-          title="Modifier"
-        >
-          <Edit size={20} />
-        </button>
-        <button
-          onClick={handleDelete}
-          className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700"
-          title="Supprimer"
-        >
-          <Trash2 size={20} /> 
-        </button>
-      </>
-    )}
-  </div>
-</div>
+          <h1 className="text-2xl font-bold text-white">
+            {patient.firstName} {patient.lastName}
+          </h1>
+          <div className="flex space-x-2">
+            {isEditing ? (
+              <>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50"
+                  title="Annuler"
+                >
+                  <X size={20} />
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50"
+                  title="Enregistrer"
+                >
+                  <Save size={20} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50"
+                  title="Modifier"
+                >
+                  <Edit size={20} />
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700"
+                  title="Supprimer"
+                >
+                  <Trash2 size={20} /> 
+                </button>
+              </>
+            )}
+          </div>
+        </div>
 
         {/* Contenu principal */}
         <div className="p-6 space-y-6">
@@ -398,27 +425,62 @@ export default function PatientProfile() {
                   <p className="p-2">{patient.weight || 'Non renseigné'}</p>
                 )}
               </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Antécédents médicaux</label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="diseases"
-                    value={editData.diseases?.join(', ') || ''}
-                    onChange={(e) => {
-                      setEditData(prev => ({
-                        ...prev,
-                        diseases: e.target.value.split(',').map(item => item.trim())
-                      }));
-                    }}
-                    className="w-full p-2 border rounded"
-                    placeholder="Séparer par des virgules"
-                  />
-                ) : (
-                  <p className="p-2">
-                    {patient.diseases?.join(', ') || 'Aucun antécédent renseigné'}
-                  </p>
-                )}
+            </div>
+
+            {/* Section Maladie */}
+            <div className="mt-6 border-t pt-6">
+              <h3 className="text-lg font-semibold mb-4">Informations sur la maladie</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Maladie*</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="diseases.name"
+                      value={editData.diseases?.name || ''}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border rounded"
+                      required
+                    />
+                  ) : (
+                    <p className="p-2">{patient.diseases?.name || 'Non renseigné'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Stade</label>
+                  {isEditing ? (
+                    <select
+                      name="diseases.stage"
+                      value={editData.diseases?.stage || ''}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="">Sélectionnez...</option>
+                      <option value="débutant">Débutant</option>
+                      <option value="intermédiaire">Intermédiaire</option>
+                      <option value="avancé">Avancé</option>
+                      <option value="chronique">Chronique</option>
+                    </select>
+                  ) : (
+                    <p className="p-2">{patient.diseases?.stage || 'Non renseigné'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date de diagnostic</label>
+                  {isEditing ? (
+                    <input
+                      type="date"
+                      name="diseases.diagnosisDate"
+                      value={editData.diseases?.diagnosisDate ? new Date(editData.diseases.diagnosisDate as string).toISOString().split('T')[0] : ''}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border rounded"
+                    />
+                  ) : (
+                    <p className="p-2">
+                      {patient.diseases?.diagnosisDate ? new Date(patient.diseases.diagnosisDate as string).toLocaleDateString() : 'Non renseigné'}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -156,7 +156,7 @@ export default function AntecedentsList() {
   if (error) return <div className="text-red-500 text-center py-8">Erreur: {error}</div>;
 
   return (
-    <div className="max-w-xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+    <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="flex justify-between items-center bg-teal-700 text-white p-4">
         <h2 className="text-lg font-semibold">Antécédents</h2>
         <button 

@@ -7,7 +7,7 @@ import {
   Pill,
   ClipboardList,
   FileSearch,
-  FilePlus,
+  FilePlus, 
   UserCircle,
   Trash2,
   CalendarCheck,
@@ -20,7 +20,7 @@ const Sidebar = ({ patientId }: { patientId: string }) => {
 
   const navItems = [
     {
-      icon: <History className="w-5 h-5 text-purple-600" />,
+      icon: <History className="w-5 h-5 text-blue-500" />,
       label: "Antécédents médicaux",
       href: `/afficher_dossier/${patientId}/antecedent`,
     },
@@ -30,27 +30,25 @@ const Sidebar = ({ patientId }: { patientId: string }) => {
       href: `/afficher_dossier/${patientId}/traitement`,
     },
     {
-      icon: <ClipboardList className="w-5 h-5 text-green-600" />,
+      icon: <ClipboardList className="w-5 h-5 text-blue-500" />,
       label: "Prescriptions", 
       href: `/afficher_dossier/${patientId}/prescription`,
     },
     {
-      icon: <FileSearch className="w-5 h-5 text-orange-500" />,
+      icon: <FileSearch className="w-5 h-5 text-blue-500" />,
       label: "Examens et résultats", 
       href: `/afficher_dossier/${patientId}/exam`,
     },
     {
-      icon: <CalendarCheck className="w-5 h-5 text-indigo-600" />,
+      icon: <CalendarCheck className="w-5 h-5 text-blue-500" />,
       label: "Consultations",
       href: `/afficher_dossier/${patientId}/consultation`,
     },
-    
     {
-      icon: <UserCircle className="w-5 h-5 text-indigo-600" />,
+      icon: <UserCircle className="w-5 h-5 text-blue-500" />,
       label: "Patient",
       href: `/afficher_dossier/${patientId}`,
     }
-
   ];
 
   return (
@@ -67,8 +65,6 @@ const Sidebar = ({ patientId }: { patientId: string }) => {
             />
           ))}
         </ul>
-
-       
       </nav>
     </div>
   );
@@ -95,7 +91,7 @@ function NavItem({
             : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
         }`}
       >
-        <span className={`${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
+        <span className="text-blue-500 dark:text-blue-400">
           {icon}
         </span>
         <span>{label}</span>

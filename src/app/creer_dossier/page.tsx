@@ -12,7 +12,7 @@ const Creer_dossier = () => {
     rhFactor: '',
     height: '',
     weight: '',
-    diseases: [{ name: '', stage: '', diagnosisDate: '' }],
+    diseases: { name: '', stage: '', diagnosisDate: '' },
     address: {
       street: '',
       city: '',
@@ -26,6 +26,7 @@ const Creer_dossier = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,33 +47,18 @@ const Creer_dossier = () => {
     }));
   };
 
-  const handleDiseaseChange = (index, e) => {
+  const handleDiseasesChange = (e) => {
     const { name, value } = e.target;
-    const updatedDiseases = [...formData.diseases];
-    updatedDiseases[index] = {
-      ...updatedDiseases[index],
-      [name]: value
-    };
     setFormData(prev => ({
       ...prev,
-      diseases: updatedDiseases
+      diseases: {
+        ...prev.diseases,
+        [name]: value
+      }
     }));
   };
 
-  const addDiseaseField = () => {
-    setFormData(prev => ({
-      ...prev,
-      diseases: [...prev.diseases, { name: '', stage: '', diagnosisDate: '' }]
-    }));
-  };
 
-  const removeDiseaseField = (index) => {
-    const updatedDiseases = formData.diseases.filter((_, i) => i !== index);
-    setFormData(prev => ({
-      ...prev,
-      diseases: updatedDiseases
-    }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,7 +76,6 @@ const Creer_dossier = () => {
         email: formData.email || null,
         height: formData.height ? Number(formData.height) : null,
         weight: formData.weight ? Number(formData.weight) : null,
-        diseases: formData.diseases.filter(d => d.name) // Ne garder que les maladies avec un nom
       };
 
       const response = await fetch('http://localhost:3000/api/patients', {
@@ -123,342 +108,332 @@ const Creer_dossier = () => {
     if (!isauth) return null
   
 
-  return (
-    <section id="contact" className="overflow-hidden py-16 md:py-20 lg:py-28">
-      <div className="container">
-        <div className="-mx-4 flex flex-wrap justify-center">
-          <div className="w-full px-4 lg:w-7/12 xl:w-8/12">
-            <div className="mb-12 rounded-sm bg-white px-8 py-11 shadow-three dark:bg-gray-dark sm:p-[55px] lg:mb-5 lg:px-8 xl:p-[55px]">
-              <h2 className="mb-3 text-2xl font-bold text-black dark:text-white sm:text-3xl lg:text-2xl xl:text-3xl">
-                Créer un nouveau dossier médical
-              </h2>
-              <p className="mb-12 text-base font-medium text-body-color">
-                Veuillez remplir tous les champs obligatoires.
-              </p>
-              
-              {error && (
-                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                <div className="-mx-4 flex flex-wrap">
-                  {/* Nom et Prénom */}
-                  <div className="w-full px-4 md:w-1/2">
-                    <div className="mb-8">
-                      <label htmlFor="lastName" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Nom *
-                      </label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        required
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      />
-                    </div>
+    return (
+      <section id="contact" className="overflow-hidden py-16 md:py-20 lg:py-28">
+        <div className="container">
+          <div className="-mx-4 flex flex-wrap justify-center">
+            <div className="w-full px-4 lg:w-7/12 xl:w-8/12">
+              <div className="mb-12 rounded-sm bg-white px-8 py-11 shadow-three dark:bg-gray-dark sm:p-[55px] lg:mb-5 lg:px-8 xl:p-[55px]">
+                <h2 className="mb-3 text-2xl font-bold text-black dark:text-white sm:text-3xl lg:text-2xl xl:text-3xl">
+                  Créer un nouveau dossier médical
+                </h2>
+                <p className="mb-12 text-base font-medium text-body-color">
+                  Veuillez remplir tous les champs obligatoires.
+                </p>
+                
+                {error && (
+                  <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                    {error}
                   </div>
-
-                  <div className="w-full px-4 md:w-1/2">
-                    <div className="mb-8">
-                      <label htmlFor="firstName" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Prénom *
-                      </label>
-                      <input
-                        type="text"
-                        id="firstName"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      />
-                    </div>
+                )}
+  
+                {success && (
+                  <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
+                    {success}
                   </div>
-
-                  {/* Date de naissance et Genre */}
-                  <div className="w-full px-4 md:w-1/2">
-                    <div className="mb-8">
-                      <label htmlFor="birthDate" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Date de naissance *
-                      </label>
-                      <input
-                        type="date"
-                        id="birthDate"
-                        name="birthDate"
-                        value={formData.birthDate}
-                        onChange={handleChange}
-                        required
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="w-full px-4 md:w-1/2">
-                    <div className="mb-8">
-                      <label htmlFor="gender" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Genre *
-                      </label>
-                      <select
-                        id="gender"
-                        name="gender"
-                        value={formData.gender}
-                        onChange={handleChange}
-                        required
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      >
-                        <option value="">Sélectionnez...</option>
-                        <option value="male">Homme</option>
-                        <option value="female">Femme</option>
-                        <option value="other">Autre</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Groupe sanguin et Rhésus */}
-                  <div className="w-full px-4 md:w-1/2">
-                    <div className="mb-8">
-                      <label htmlFor="bloodGroup" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Groupe sanguin *
-                      </label>
-                      <select
-                        id="bloodGroup"
-                        name="bloodGroup"
-                        value={formData.bloodGroup}
-                        onChange={handleChange}
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      >
-                        <option value="">Sélectionnez...</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="AB">AB</option>
-                        <option value="O">O</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="w-full px-4 md:w-1/2">
-                    <div className="mb-8">
-                      <label htmlFor="rhFactor" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Facteur Rh *
-                      </label>
-                      <select
-                        id="rhFactor"
-                        name="rhFactor"
-                        value={formData.rhFactor}
-                        onChange={handleChange}
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      >
-                        <option value="">Sélectionnez...</option>
-                        <option value="+">+</option>
-                        <option value="-">-</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Taille et Poids */}
-                  <div className="w-full px-4 md:w-1/2">
-                    <div className="mb-8">
-                      <label htmlFor="height" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Taille (cm)
-                      </label>
-                      <input
-                        type="number"
-                        id="height"
-                        name="height"
-                        value={formData.height}
-                        onChange={handleChange}
-
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="w-full px-4 md:w-1/2">
-                    <div className="mb-8">
-                      <label htmlFor="weight" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Poids (kg)
-                      </label>
-                      <input
-                        type="number"
-                        id="weight"
-                        name="weight"
-                        value={formData.weight}
-                        onChange={handleChange}
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Maladies */}
-                  {formData.diseases.map((disease, index) => (
-                    <div key={index} className="w-full px-4 border-b pb-4 mb-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <h3 className="text-lg font-medium">Maladie {index + 1}</h3>
-                        {index > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => removeDiseaseField(index)}
-                            className="text-red-500 text-sm"
-                          >
-                            Supprimer
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="mb-4">
-                        <label htmlFor={`disease-name-${index}`} className="mb-1 block text-sm font-medium text-dark dark:text-white">
-                          Nom de la maladie
+                )}
+  
+                <form onSubmit={handleSubmit}>
+                  <div className="-mx-4 flex flex-wrap">
+                    {/* Nom et Prénom */}
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="lastName" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Nom *
                         </label>
                         <input
                           type="text"
-                          id={`disease-name-${index}`}
-                          name="name"
-                          value={disease.name}
-                          onChange={(e) => handleDiseaseChange(index, e)}
+                          id="lastName"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleChange}
+                          required
                           className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                         />
                       </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label htmlFor={`disease-stage-${index}`} className="mb-1 block text-sm font-medium text-dark dark:text-white">
-                            Stade
-                          </label>
-                          <select
-                            id={`disease-stage-${index}`}
-                            name="stage"
-                            value={disease.stage}
-                            onChange={(e) => handleDiseaseChange(index, e)}
-                            className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                          >
-                            <option value="">Sélectionnez...</option>
-                            <option value="débutant">Débutant</option>
-                            <option value="intermédiaire">Intermédiaire</option>
-                            <option value="avancé">Avancé</option>
-                            <option value="chronique">Chronique</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label htmlFor={`disease-date-${index}`} className="mb-1 block text-sm font-medium text-dark dark:text-white">
-                            Date de diagnostic
-                          </label>
-                          <input
-                            type="date"
-                            id={`disease-date-${index}`}
-                            name="diagnosisDate"
-                            value={disease.diagnosisDate}
-                            onChange={(e) => handleDiseaseChange(index, e)}
-                            className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                          />
-                        </div>
+                    </div>
+  
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="firstName" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Prénom *
+                        </label>
+                        <input
+                          type="text"
+                          id="firstName"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleChange}
+                          required
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
                       </div>
                     </div>
-                  ))}
-
-                  <div className="w-full px-4 mb-4">
-                    <button
-                      type="button"
-                      onClick={addDiseaseField}
-                      className="text-primary text-sm font-medium"
-                    >
-                      + Ajouter une autre maladie
-                    </button>
-                  </div>
-
-                  {/* Adresse */}
-                  <div className="w-full px-4">
-                    <div className="mb-8">
-                      <label htmlFor="street" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Adresse *
-                      </label>
-                      <input
-                        type="text"
-                        id="street"
-                        name="street"
-                        value={formData.address.street}
-                        onChange={handleAddressChange}
-                        required
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      />
+  
+                    {/* Date de naissance et Genre */}
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="birthDate" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Date de naissance *
+                        </label>
+                        <input
+                          type="date"
+                          id="birthDate"
+                          name="birthDate"
+                          value={formData.birthDate}
+                          onChange={handleChange}
+                          required
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="w-full px-4 md:w-1/3">
-                    <div className="mb-8">
-                      <label htmlFor="city" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Ville *
-                      </label>
-                      <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        value={formData.address.city}
-                        onChange={handleAddressChange}
-                        required
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      />
+  
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="gender" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Genre *
+                        </label>
+                        <select
+                          id="gender"
+                          name="gender"
+                          value={formData.gender}
+                          onChange={handleChange}
+                          required
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        >
+                          <option value="">Sélectionnez...</option>
+                          <option value="male">Homme</option>
+                          <option value="female">Femme</option>
+                          <option value="other">Autre</option>
+                        </select>
+                      </div>
                     </div>
-                  </div>
-
-              
-
-                  <div className="w-full px-4 md:w-1/3">
-                    <div className="mb-8">
-                      <label htmlFor="country" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Pays *
-                      </label>
-                      <input
-                        type="text"
-                        id="country"
-                        name="country"
-                        value={formData.address.country}
-                        onChange={handleAddressChange}
-                        required
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      />
+  
+                    {/* Groupe sanguin et Rhésus */}
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="bloodGroup" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Groupe sanguin *
+                        </label>
+                        <select
+                          id="bloodGroup"
+                          name="bloodGroup"
+                          value={formData.bloodGroup}
+                          onChange={handleChange}
+                          required
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        >
+                          <option value="">Sélectionnez...</option>
+                          <option value="A+">A+</option>
+                          <option value="A-">A-</option>
+                          <option value="B+">B+</option>
+                          <option value="B-">B-</option>
+                          <option value="AB+">AB+</option>
+                          <option value="AB-">AB-</option>
+                          <option value="O+">O+</option>
+                          <option value="O-">O-</option>
+                        </select>
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Contact */}
-                  <div className="w-full px-4 md:w-1/2">
-                    <div className="mb-8">
-                      <label htmlFor="phone" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Téléphone *
-                      </label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder="+229XXXXXXXX"
-                        required
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      />
-                      
+  
+                    {/* Taille et Poids */}
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="height" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Taille (cm)
+                        </label>
+                        <input
+                          type="number"
+                          id="height"
+                          name="height"
+                          value={formData.height}
+                          onChange={handleChange}
+                          min="0"
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="w-full px-4 md:w-1/2">
-                    <div className="mb-8">
-                      <label htmlFor="email" className="mb-3 block text-sm font-medium text-dark dark:text-white">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
-                      />
+  
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="weight" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Poids (kg)
+                        </label>
+                        <input
+                          type="number"
+                          id="weight"
+                          name="weight"
+                          value={formData.weight}
+                          onChange={handleChange}
+                          min="0"
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
+                      </div>
                     </div>
-                  </div>
+  
+                    {/* Maladies */}
+                    <div className="w-full px-4">
+                      <h3 className="mb-4 text-lg font-medium text-dark dark:text-white">
+                        Informations sur les maladies
+                      </h3>
+                    </div>
+  
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="diseaseName" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Nom de la maladie *
+                        </label>
+                        <input
+                          type="text"
+                          id="diseaseName"
+                          name="name"
+                          value={formData.diseases.name}
+                          onChange={handleDiseasesChange}
+                          required
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
+                      </div>
+                    </div>
+  
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="diseaseStage" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Stade de la maladie *
+                        </label>
+                        <select
+                          id="diseaseStage"
+                          name="stage"
+                          value={formData.diseases.stage}
+                          onChange={handleDiseasesChange}
+                          required
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        >
+                          <option value="">Sélectionnez...</option>
+                          <option value="débutant">Débutant</option>
+                          <option value="intermédiaire">Intermédiaire</option>
+                          <option value="avancé">Avancé</option>
+                          <option value="chronique">Chronique</option>
+                        </select>
+                      </div>
+                    </div>
+  
+                    <div className="w-full px-4">
+                      <div className="mb-8">
+                        <label htmlFor="diagnosisDate" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Date de diagnostic *
+                        </label>
+                        <input
+                          type="date"
+                          id="diagnosisDate"
+                          name="diagnosisDate"
+                          value={formData.diseases.diagnosisDate}
+                          onChange={handleDiseasesChange}
+                          required
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
+                      </div>
+                    </div>
+  
+                    {/* Adresse */}
+                    <div className="w-full px-4">
+                      <h3 className="mb-4 text-lg font-medium text-dark dark:text-white">
+                        Adresse
+                      </h3>
+                    </div>
+  
+                    <div className="w-full px-4">
+                      <div className="mb-8">
+                        <label htmlFor="street" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Rue *
+                        </label>
+                        <input
+                          type="text"
+                          id="street"
+                          name="street"
+                          value={formData.address.street}
+                          onChange={handleAddressChange}
+                          required
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
+                      </div>
+                    </div>
+  
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="city" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Ville *
+                        </label>
+                        <input
+                          type="text"
+                          id="city"
+                          name="city"
+                          value={formData.address.city}
+                          onChange={handleAddressChange}
+                          required
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
+                      </div>
+                    </div>
+  
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="country" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Pays *
+                        </label>
+                        <input
+                          type="text"
+                          id="country"
+                          name="country"
+                          value={formData.address.country}
+                          onChange={handleAddressChange}
+                          required
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
+                      </div>
+                    </div>
+  
+                    {/* Contact */}
+                    <div className="w-full px-4">
+                      <h3 className="mb-4 text-lg font-medium text-dark dark:text-white">
+                        Contact
+                      </h3>
+                    </div>
+  
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="phone" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Téléphone *
+                        </label>
+                        <input
+                          type="tel"
+                          id="phone"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          placeholder="+229XXXXXXXX"
+                          pattern="\+229\d{10}"
+                          required
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: +229XXXXXXXX</p>
+                      </div>
+                    </div>
+  
+                    <div className="w-full px-4 md:w-1/2">
+                      <div className="mb-8">
+                        <label htmlFor="email" className="mb-3 block text-sm font-medium text-dark dark:text-white">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
+                        />
+                      </div>
+                    </div>
 
                   {/* Bouton de soumission */}
                   <div className="w-full px-4">

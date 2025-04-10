@@ -2,7 +2,6 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Plus, Stethoscope, ChevronLeft, Calendar, ClipboardList, FileText } from 'lucide-react';
-import Link from 'next/link';
 import { useRole } from '../../../../hooks/useRole';
 
 interface Consultation {
@@ -31,6 +30,9 @@ export default function ConsultationPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const isauth = useRole('doctor');
+  
+  if (!isauth) return null;
   
   // Form state
   const [formData, setFormData] = useState({
@@ -157,11 +159,9 @@ export default function ConsultationPage() {
       </div>
     );
   }
-  const isauth = useRole('doctor');
   
-  if (!isauth) return null;
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="flex items-center mb-6">
         <button 
           onClick={() => window.history.back()} 
