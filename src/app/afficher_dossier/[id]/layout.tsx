@@ -7,15 +7,16 @@ export default async function PatientLayout({
   params 
 }: { 
   children: ReactNode,
-  params: Promise<{ ide: string }> // Note the Promise wrapper
+  params: Promise<{ id: string }> // Note the Promise wrapper
 }) {
   // Await the params promise
-  const { ide } = await params;
+  const { id } = await params;
   
   return (
     <div>
+      <h3>{id}</h3>
       <aside className="w-64 bg-white shadow-md fixed h-full">
-        <Sidebar patientId={ide} /> {/* Use the resolved id */}
+        <Sidebar patientId={id} /> {/* Use the resolved id */}
       </aside>
 
       {/* Main Content */}
