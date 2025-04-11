@@ -14,7 +14,7 @@ export default async function PatientLayout({
   
   return (
     <div>
-      <h3>{id}</h3>
+
       <aside className="w-64 bg-white shadow-md fixed h-full">
         <Sidebar patientId={id} /> {/* Use the resolved id */}
       </aside>
