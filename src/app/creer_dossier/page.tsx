@@ -77,12 +77,12 @@ const Creer_dossier = () => {
         height: formData.height ? Number(formData.height) : null,
         weight: formData.weight ? Number(formData.weight) : null,
       };
-
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
       const response = await fetch('https://backhack-production.up.railway.app/api/patients', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(payload)
       });

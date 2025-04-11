@@ -36,12 +36,12 @@ export default function PatientProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
 
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('access_token');
         const response = await fetch(`https://backhack-production.up.railway.app/api/patients/${patientId}`, {
           headers: {
             'Authorization': `Bearer ${token}`

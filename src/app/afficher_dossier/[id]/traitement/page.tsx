@@ -28,7 +28,7 @@ interface Prescription {
 export default function PrescriptionsList() {
   const params = useParams();
   const patientId = params?.id || params?.patientId;
-  
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +50,7 @@ export default function PrescriptionsList() {
     try {
       const response = await fetch(`https://backhack-production.up.railway.app/api/prescription/patients/${patientId}/prescriptions`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       
@@ -101,7 +101,7 @@ export default function PrescriptionsList() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(formData)
       });
@@ -122,7 +122,7 @@ export default function PrescriptionsList() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(formData)
       });
@@ -168,7 +168,7 @@ export default function PrescriptionsList() {
       const response = await fetch(`https://backhack-production.up.railway.app/api/prescription/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
 

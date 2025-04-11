@@ -41,6 +41,7 @@ export default function UrinExamDetails() {
   const [exam, setExam] = useState<UrinExam | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
 
   useEffect(() => {
     if (!id) return;
@@ -49,7 +50,7 @@ export default function UrinExamDetails() {
       try {
         const response = await fetch(`https://backhack-production.up.railway.app/api/exams/urin/${id}`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${token}`
           }
         });
 
@@ -76,7 +77,7 @@ export default function UrinExamDetails() {
       const response = await fetch(`https://backhack-production.up.railway.app/api/exams/urin/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
 

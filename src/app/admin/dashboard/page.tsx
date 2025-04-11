@@ -41,7 +41,7 @@ const [editingUser, setEditingUser] = useState<User | null>(null);
     verifyAdmin();
     fetchUsers();
   }, []);
-  const token = localStorage.getItem('access_token');
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
 
   const verifyAdmin = async () => {
     // 1. Vérifier d'abord si le token existe

@@ -2,33 +2,29 @@ import { ReactNode } from "react";
 import ProfileCard from "@/components/Profile";
 import Sidebar from "@/components/Sidebar";
 
-interface PatientData {
-  id: string;
-}
-
-export default function PatientLayout({ 
+export default async function PatientLayout({ 
   children,
   params 
 }: { 
   children: ReactNode,
-  params: { id: string }
+  params: Promise<{ ide: string }> // Note the Promise wrapper
 }) {
+  // Await the params promise
+  const { ide } = await params;
+  
   return (
-    <div >
-      
+    <div>
       <aside className="w-64 bg-white shadow-md fixed h-full">
-       
       </aside>
 
-      {/* Contenu Principal */}
+      {/* Main Content */}
       <main className="ml-64">
-        {/* ProfileCard en haut */}
-        <section >
-          <ProfileCard  />
+        {/* ProfileCard at the top */}
+        <section>
+          <ProfileCard />
         </section>
- 
-          {children}
-  
+        
+        {children}
       </main>
     </div>
   );

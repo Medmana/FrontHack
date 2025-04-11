@@ -11,6 +11,7 @@ export default function BloodTestForm() {
   const [success, setSuccess] = useState(false);
   const params = useParams();
   const patientId = params?.id || params?.patientId;
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
 
   const parameters = [
     { name: "redBloodCells", label: "Globules rouges", unit: "x10¹²/L", normal: "6,54-12,20" },
@@ -42,12 +43,13 @@ export default function BloodTestForm() {
         ...Object.fromEntries(
           Object.entries(results).map(([key, value]) => [key, parseFloat(value)])
       )};
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
 
       const response = await fetch('https://backhack-production.up.railway.app/api/exams/blood', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(examData)
       });

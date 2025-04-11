@@ -6,7 +6,7 @@ import SectionTitle from "../Common/SectionTitle";
 import SinglePatient from "./SinglePatient";
 import { useRole } from '../../hooks/useRole';
 import { useEffect } from "react";
-const token = localStorage.getItem('access_token');
+const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
 const Patients = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState<keyof Patient>("firstName");

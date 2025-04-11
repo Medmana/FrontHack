@@ -41,6 +41,7 @@ export default function PatientExams() {
   
   const params = useParams();
   const patientId = params?.id || params?.patientId;
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
 
   useEffect(() => {
     if (!patientId) return;
@@ -51,7 +52,7 @@ export default function PatientExams() {
         const endpoint = `https://backhack-production.up.railway.app/api/exams/${activeTab}/${patientId}`;
         const response = await fetch(endpoint, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${token}`
           }
         });
         
@@ -88,7 +89,7 @@ export default function PatientExams() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(editData)
       });
@@ -114,7 +115,7 @@ export default function PatientExams() {
       const response = await fetch(`https://backhack-production.up.railway.app/api/exams/${activeTab}/${examId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       
@@ -129,12 +130,21 @@ export default function PatientExams() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setEditData(prev => ({
-      ...prev,
-      [name]: name.endsWith('Date') ? value : Number(value) || value
-    }));
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    const target = e.target as HTMLInputElement; // Type assertion
+    
+    if (type === 'checkbox') {
+      setEditData(prev => ({
+        ...prev,
+        [name]: (target as HTMLInputElement).checked
+      }));
+    } else {
+      setEditData(prev => ({
+        ...prev,
+        [name]: name.endsWith('Date') ? value : Number(value) || value
+      }));
+    }
   };
   const isauth = useRole('doctor');
   

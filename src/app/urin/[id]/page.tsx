@@ -45,7 +45,7 @@ export default function UrinExamForm() {
     setError(null);
 
     try {
-      const accessToken = localStorage.getItem('access_token');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
       
 
 
@@ -68,7 +68,7 @@ export default function UrinExamForm() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(examData)
       });

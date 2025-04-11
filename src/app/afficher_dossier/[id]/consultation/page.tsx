@@ -52,7 +52,7 @@ export default function ConsultationPage() {
       try {
         setLoading(true);
         console.log("popo")
-        const token = localStorage.getItem('access_token');
+        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
         const response = await fetch(`https://backhack-production.up.railway.app/api/consultations/${patientId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -85,7 +85,7 @@ export default function ConsultationPage() {
     e.preventDefault();
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
       
       const consultationData = {
         reason: formData.reason,

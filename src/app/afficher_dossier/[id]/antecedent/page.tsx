@@ -23,12 +23,12 @@ export default function AntecedentsList() {
   useEffect(() => {
     fetchAntecedents();
   }, [patientId]);
-
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
   const fetchAntecedents = async () => {
     try {
       const response = await fetch(`https://backhack-production.up.railway.app/api/antecedents/patients/${patientId}/antecedents`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       
