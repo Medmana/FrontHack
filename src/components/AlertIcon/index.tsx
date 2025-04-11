@@ -8,7 +8,7 @@ export default function AlertIcon() {
   useEffect(() => {
     const fetchUnreadAlerts = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/alerts/unread-count');
+        const res = await fetch('https://backhack-production.up.railway.app/api/alerts/unread-count');
         const { count } = await res.json();
         setUnreadCount(count);
       } catch (error) {

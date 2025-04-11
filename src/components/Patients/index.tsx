@@ -19,7 +19,7 @@ const Patients = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/patients', {
+        const response = await fetch('https://backhack-production.up.railway.app/api/patients', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

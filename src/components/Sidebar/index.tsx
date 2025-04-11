@@ -22,7 +22,7 @@ const Sidebar = ({ patientId }: { patientId: string }) => {
   const handleDownloadDossier = async () => {
     try {
       // Appel à l'API pour générer le PDF
-      const response = await fetch(`http://localhost:3000/api/patients/${patientId}/dossier`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/patients/${patientId}/dossier`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

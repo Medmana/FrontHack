@@ -26,7 +26,7 @@ export default function AntecedentsList() {
 
   const fetchAntecedents = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/antecedents/patients/${patientId}/antecedents`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/antecedents/patients/${patientId}/antecedents`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         }
@@ -53,7 +53,7 @@ export default function AntecedentsList() {
     e.preventDefault();
     try {
       const response = await fetch(
-        `http://localhost:3000/api/antecedents/patients/${patientId}/antecedents`, 
+        `https://backhack-production.up.railway.app/api/antecedents/patients/${patientId}/antecedents`, 
         {
           method: 'POST',
           headers: {
@@ -78,7 +78,7 @@ export default function AntecedentsList() {
     e.preventDefault();
     try {
       const response = await fetch(
-        `http://localhost:3000/api/antecedents/${currentAntecedent._id}`, 
+        `https://backhack-production.up.railway.app/api/antecedents/${currentAntecedent._id}`, 
         {
           method: 'PUT',
           headers: {
@@ -135,7 +135,7 @@ export default function AntecedentsList() {
     if (!confirm('Supprimer cet antécédent ?')) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/antecedents/${id}`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/antecedents/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`

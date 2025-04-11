@@ -43,7 +43,7 @@ export default function BloodTestForm() {
           Object.entries(results).map(([key, value]) => [key, parseFloat(value)])
       )};
 
-      const response = await fetch('http://localhost:3000/api/exams/blood', {
+      const response = await fetch('https://backhack-production.up.railway.app/api/exams/blood', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

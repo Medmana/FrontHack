@@ -10,7 +10,7 @@ export default function LogoutButton() {
   const handleLogout = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/auth/logout', {
+      const response = await fetch('https://backhack-production.up.railway.app/api/auth/logout', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

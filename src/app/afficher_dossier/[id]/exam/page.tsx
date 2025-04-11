@@ -48,7 +48,7 @@ export default function PatientExams() {
     const loadExams = async () => {
       try {
         setLoading(true);
-        const endpoint = `http://localhost:3000/api/exams/${activeTab}/${patientId}`;
+        const endpoint = `https://backhack-production.up.railway.app/api/exams/${activeTab}/${patientId}`;
         const response = await fetch(endpoint, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -84,7 +84,7 @@ export default function PatientExams() {
     if (!selectedExam) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/exams/${activeTab}/${selectedExam._id}`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/exams/${activeTab}/${selectedExam._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ export default function PatientExams() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet examen ?')) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/exams/${activeTab}/${examId}`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/exams/${activeTab}/${examId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`

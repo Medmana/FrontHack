@@ -71,7 +71,7 @@ const [editingUser, setEditingUser] = useState<User | null>(null);
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/api/admin/users', {
+      const res = await fetch('https://backhack-production.up.railway.app/api/admin/users', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -88,7 +88,7 @@ const [editingUser, setEditingUser] = useState<User | null>(null);
 
   const handleCreateUser = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/admin/users', {
+      const res = await fetch('https://backhack-production.up.railway.app/api/admin/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ const [editingUser, setEditingUser] = useState<User | null>(null);
     if (!editingUser) return;
   
     try {
-      const res = await fetch(`http://localhost:3000/api/admin/users/${editingUser._id}`, {
+      const res = await fetch(`https://backhack-production.up.railway.app/api/admin/users/${editingUser._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ const [editingUser, setEditingUser] = useState<User | null>(null);
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/api/admin/users/${userId}`, {
+      const res = await fetch(`https://backhack-production.up.railway.app/api/admin/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`

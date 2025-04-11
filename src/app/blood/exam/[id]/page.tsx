@@ -47,7 +47,7 @@ export default function UrinExamDetails() {
 
     const fetchExam = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/exams/urin/${id}`, {
+        const response = await fetch(`https://backhack-production.up.railway.app/api/exams/urin/${id}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
           }
@@ -73,7 +73,7 @@ export default function UrinExamDetails() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet examen ?')) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/exams/urin/${id}`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/exams/urin/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`

@@ -42,7 +42,7 @@ export default function PatientProfile() {
       try {
         setLoading(true);
         const token = localStorage.getItem('access_token');
-        const response = await fetch(`http://localhost:3000/api/patients/${patientId}`, {
+        const response = await fetch(`https://backhack-production.up.railway.app/api/patients/${patientId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -108,7 +108,7 @@ export default function PatientProfile() {
 
       setLoading(true);
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://localhost:3000/api/patients/${patientId}`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/patients/${patientId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ export default function PatientProfile() {
       try {
         setLoading(true);
         const token = localStorage.getItem('access_token');
-        const response = await fetch(`http://localhost:3000/api/patients/${patientId}`, {
+        const response = await fetch(`https://backhack-production.up.railway.app/api/patients/${patientId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`

@@ -53,7 +53,7 @@ export default function ConsultationPage() {
         setLoading(true);
         console.log("popo")
         const token = localStorage.getItem('access_token');
-        const response = await fetch(`http://localhost:3000/api/consultations/${patientId}`, {
+        const response = await fetch(`https://backhack-production.up.railway.app/api/consultations/${patientId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -101,7 +101,7 @@ export default function ConsultationPage() {
         nextAppointment: formData.nextAppointment ? new Date(formData.nextAppointment) : undefined
       };
 
-      const response = await fetch(`http://localhost:3000/api/consultations/${patientId}`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/consultations/${patientId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

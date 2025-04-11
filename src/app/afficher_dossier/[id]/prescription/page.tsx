@@ -48,7 +48,7 @@ export default function PrescriptionsList() {
 
   const fetchPrescriptions = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/prescription/patients/${patientId}/prescriptions`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/prescription/patients/${patientId}/prescriptions`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         }
@@ -97,7 +97,7 @@ export default function PrescriptionsList() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/api/prescription/patients/${patientId}/prescriptions`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/prescription/patients/${patientId}/prescriptions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ export default function PrescriptionsList() {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/api/prescription/${currentPrescription?._id}`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/prescription/${currentPrescription?._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -165,7 +165,7 @@ export default function PrescriptionsList() {
     if (!confirm('Supprimer cette prescription ?')) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/prescription/${id}`, {
+      const response = await fetch(`https://backhack-production.up.railway.app/api/prescription/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`

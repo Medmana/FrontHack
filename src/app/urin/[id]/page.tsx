@@ -64,7 +64,7 @@ export default function UrinExamForm() {
         germCount: Number(formData.germCount) || 0
       };
 
-      const response = await fetch('http://localhost:3000/api/exams/urin', {
+      const response = await fetch('https://backhack-production.up.railway.app/api/exams/urin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

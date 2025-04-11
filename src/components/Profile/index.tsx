@@ -37,7 +37,7 @@ const ProfileCard = () => {
     const fetchPatientData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/api/patients/${patientId}`, {
+        const response = await fetch(`https://backhack-production.up.railway.app/api/patients/${patientId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

@@ -98,7 +98,7 @@ export default function AlertsPage() {
       if (status) params.set('status', status);
       if (readStatus) params.set('readStatus', readStatus);
 
-      const res = await fetch(`http://localhost:3000/api/alerts?${params.toString()}`);
+      const res = await fetch(`https://backhack-production.up.railway.app/api/alerts?${params.toString()}`);
       const data = await res.json();
       setAlerts(data);
     } finally {
@@ -112,25 +112,25 @@ export default function AlertsPage() {
 
   // Marquer comme lu
   const markAsRead = async (alertId: string) => {
-    await fetch(`http://localhost:3000/api/alerts/${alertId}/read`, { method: 'PUT' });
+    await fetch(`https://backhack-production.up.railway.app/api/alerts/${alertId}/read`, { method: 'PUT' });
     fetchAlerts();
   };
 
   // Résoudre une alerte
   const resolveAlert = async (alertId: string) => {
-    await fetch(`http://localhost:3000/api/alerts/${alertId}/resolve`, { method: 'PUT' });
+    await fetch(`https://backhack-production.up.railway.app/api/alerts/${alertId}/resolve`, { method: 'PUT' });
     fetchAlerts();
   };
 
   // Supprimer une alerte
   const deleteAlert = async (alertId: string) => {
-    await fetch(`http://localhost:3000/api/alerts/${alertId}`, { method: 'DELETE' });
+    await fetch(`https://backhack-production.up.railway.app/api/alerts/${alertId}`, { method: 'DELETE' });
     fetchAlerts();
   };
 
   // Marquer toutes comme lues
   const markAllAsRead = async () => {
-    await fetch('http://localhost:3000/api/alerts/mark-all-read', { method: 'PUT' });
+    await fetch('https://backhack-production.up.railway.app/api/alerts/mark-all-read', { method: 'PUT' });
     fetchAlerts();
   };
 

@@ -78,7 +78,7 @@ const Creer_dossier = () => {
         weight: formData.weight ? Number(formData.weight) : null,
       };
 
-      const response = await fetch('http://localhost:3000/api/patients', {
+      const response = await fetch('https://backhack-production.up.railway.app/api/patients', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -289,7 +289,7 @@ const Creer_dossier = () => {
                           name="name"
                           value={formData.diseases.name}
                           onChange={handleDiseasesChange}
-                          required
+                          
                           className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                         />
                       </div>
@@ -305,7 +305,7 @@ const Creer_dossier = () => {
                           name="stage"
                           value={formData.diseases.stage}
                           onChange={handleDiseasesChange}
-                          required
+                          
                           className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                         >
                           <option value="">Sélectionnez...</option>
@@ -328,7 +328,7 @@ const Creer_dossier = () => {
                           name="diagnosisDate"
                           value={formData.diseases.diagnosisDate}
                           onChange={handleDiseasesChange}
-                          required
+                         
                           className="border-stroke w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:text-body-color-dark dark:shadow-two dark:focus:border-primary dark:focus:shadow-none"
                         />
                       </div>
